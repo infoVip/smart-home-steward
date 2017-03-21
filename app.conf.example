@@ -1,5 +1,6 @@
 # 百度语音参数
 [BaiduVoice]
-cuid = ""
-apiKey = ""
-secretKey = ""
+cuid = 
+apiKey = 
+secretKey = 
+access_token = 
