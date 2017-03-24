@@ -1,6 +1,21 @@
-# 百度语音参数
-[BaiduVoice]
-cuid = 
-apiKey = 
-secretKey = 
-access_token = 
+# 百度语音 API 参数
+[BaiduVoiceAPI]
+cuid =
+apikey =
+secretkey =
+accesstoken =
+expireat =
+
+# 百度语音识别参数
+[BaiduVoiceRecognition]
+rate = 16000
+format = wav
+recognizeLanguage = zh
+
+# 百度语音合成参数
+[BaiduVoiceGeneration]
+pitch = 5
+speed = 5
+volumn = 5
+person = 0
+generationLanguage = zh
