@@ -5,9 +5,11 @@ import random
 import ConfigParser
 from libs.TulingAPI import TulingAPI
 from libs.BaiduVoiceAPI import BaiduVoiceAPI
+from libs.hardwareController import hardwareController
 
 
 class Interact():
+    hardwareHelper = ""
     baiduVoice = ""
     tuling = ""
 
@@ -16,6 +18,9 @@ class Interact():
 
     # 初始化模块
     def __init__(self):
+        # 初始化硬件控制类
+        self.hardwareHelper = hardwareController()
+
         # 初始化百度语音 API 工具类
         self.baiduVoice = BaiduVoiceAPI()
 
@@ -48,6 +53,7 @@ class Interact():
         voiceUrl = self.baiduVoice.vocieGeneration(selectedItem[1])
         os.system("mplayer '%s'" % voiceUrl)
 
+    # 开始语音服务
     def startServe(self):
         # 开启录音
         os.system("arecord -D 'plughw:1,0' -f S16_LE -d 3 -r 16000 audio/voice.wav")
@@ -60,6 +66,41 @@ class Interact():
         print ">>>>> 识别结果: " + voiceResult
         print '\033[0m'
         if (voiceResult != ""):
+
+            # TODO: 临时应付部分
+            if ("灯" in voiceResult):
+                if ("白" in voiceResult):
+                    voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开灯")
+                    os.system("mplayer '%s'" % voiceUrl)
+                    os.system("mplayer 'audio/device_on.wav'")
+                    self.hardwareHelper.lightUp(11)
+                if ("红" in voiceResult):
+                    voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开灯")
+                    os.system("mplayer '%s'" % voiceUrl)
+                    os.system("mplayer 'audio/device_on.wav'")
+                    self.hardwareHelper.lightUp(13)
+                if ("黄" in voiceResult):
+                    voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开灯")
+                    os.system("mplayer '%s'" % voiceUrl)
+                    os.system("mplayer 'audio/device_on.wav'")
+                    self.hardwareHelper.lightUp(15)
+                if ("关" in voiceResult):
+                    voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您关灯")
+                    os.system("mplayer '%s'" % voiceUrl)
+                    os.system("mplayer 'audio/device_off.wav'")
+                    self.hardwareHelper.lightOff(11)
+                    self.hardwareHelper.lightOff(13)
+                    self.hardwareHelper.lightOff(15)
+                return
+
+            if ("室内" in voiceResult):
+                voiceUrl = self.baiduVoice.vocieGeneration("正在监测室温，请稍候")
+                os.system("mplayer '%s'" % voiceUrl)
+                os.system("mplayer 'audio/loading.wav'")
+                voiceUrl = self.baiduVoice.vocieGeneration("当前室内温度为，15度，天气是很凉快，请记得多穿点衣服，不要着凉哦！")
+                os.system("mplayer '%s'" % voiceUrl)
+                return
+
             # 请求图灵对话结果
             dialogResult = self.tuling.getDialogResult(voiceResult)
             print '\033[1;32;40m'
@@ -68,3 +109,6 @@ class Interact():
             # 获取语音合成 url
             voiceUrl = self.baiduVoice.vocieGeneration(dialogResult)
             os.system("mplayer '%s'" % voiceUrl)
+
+    def hardwareControl(self):
+        return
