@@ -12,7 +12,7 @@ import ConfigParser
 class BaiduVoiceAPI():
     # 百度语音 API 基本参数
     config = ""
-    cuid = ""
+    cuId = ""
     apiKey = ""
     secretKey = ""
     accessToken = ""
@@ -32,11 +32,11 @@ class BaiduVoiceAPI():
     # 初始化模块
     def __init__(self):
         # 读取配置
-        print "***** 读取配置信息 *****"
+        print "***** 读取百度语音配置信息 *****"
 
         self.config = ConfigParser.ConfigParser()
         self.config.read("./app.conf")
-        self.cuid = self.config.get("BaiduVoiceAPI", "cuid")
+        self.cuId = self.config.get("BaiduVoiceAPI", "cuId")
         self.apiKey = self.config.get("BaiduVoiceAPI", "apiKey")
         self.secretKey = self.config.get("BaiduVoiceAPI", "secretKey")
         self.accessToken = self.config.get("BaiduVoiceAPI", "accessToken")
@@ -54,8 +54,10 @@ class BaiduVoiceAPI():
         self.generationLanguage = self.config.get(
             "BaiduVoiceGeneration", "generationLanguage")
 
-        if (self.cuid == "") or (self.apiKey == "") or (self.secretKey == "") or (self.rate == "") or (self.audioFormat == "") or (self.recognizeLanguage == ""):
-            print "!!!!! 配置信息加载失败，请检查配置文件是否正确！ !!!!!"
+        if (self.cuId == "") or (self.apiKey == "") or (self.secretKey == "") or (self.rate == "") or (self.audioFormat == "") or (self.recognizeLanguage == ""):
+            print '\033[1;31;40m'
+            print "!!!!! 百度语音配置信息加载失败，请检查配置文件是否正确！ !!!!!"
+            print '\033[0m'
             os._exit(0)
 
         # 加载 accessToken
@@ -104,7 +106,7 @@ class BaiduVoiceAPI():
 
         # 封装 post 请求并发送
         postBody = {'format': self.audioFormat, 'rate': self.rate, 'channel': 1, 'lan': self.recognizeLanguage,
-                    'token': self.accessToken, 'cuid': self.cuid, 'len': fileLen, 'speech': encryptData}
+                    'token': self.accessToken, 'cuid': self.cuId, 'len': fileLen, 'speech': encryptData}
         response = self.request(apiUrl, postBody)
 
         # 结果处理
@@ -121,7 +123,7 @@ class BaiduVoiceAPI():
         # 构造 get url
         url = "http://tsn.baidu.com/text2audio?tex=" + text + \
             "&lan=" + self.generationLanguage + "&tok=" + self.accessToken + \
-            "&ctp=1&cuid=" + self.cuid + "&spd=" + self.speed + "&pit=" + \
-            self.pitch + "&vol=" + self.volumn + "&person=" + self.person
+            "&ctp=1&cuid=" + self.cuId + "&spd=" + self.speed + "&pit=" + \
+            self.pitch + "&vol=" + self.volumn + "&per=" + self.person
 
         return url

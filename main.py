@@ -2,7 +2,7 @@
 
 import os
 import sys
-from libs.BaiduVoiceAPI import BaiduVoiceAPI
+from libs.Interact import Interact
 
 
 def main():
@@ -10,21 +10,14 @@ def main():
     reload(sys)
     sys.setdefaultencoding("utf-8")
 
-    # 开启录音
-    os.system("arecord -D 'plughw:1,0' -f S16_LE -d 3 -r 16000 tmp/voice.wav")
+    # 初始化用户交互工具类
+    interact = Interact()
 
-    # 初始化百度语音 API 工具类
-    baiduVoice = BaiduVoiceAPI()
+    # 播放欢迎词
+    interact.sayHello()
 
-    # 开始进行语音识别
-    result = baiduVoice.vocieTranslation("tmp/voice.wav")
-
-    # 处理识别结果
-    print ">>>>> 识别结果: " + result
-    if (result != ""):
-        # 获取语音合成 url
-        voiceUrl = baiduVoice.vocieGeneration(result)
-        os.system("mplayer '%s'" % voiceUrl)
+    # 开始服务
+    interact.startServe()
 
 if __name__ == '__main__':
     main()
