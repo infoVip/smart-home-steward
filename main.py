@@ -2,7 +2,6 @@
 
 import os
 import sys
-from libs.Interact import Interact
 
 
 def main():
@@ -10,14 +9,8 @@ def main():
     reload(sys)
     sys.setdefaultencoding("utf-8")
 
-    # 初始化用户交互工具类
-    interact = Interact()
-
-    # 播放欢迎词
-    interact.sayHello()
-
-    # 开始服务
-    interact.startServe()
+    # 启动语音唤醒监听
+    os.popen("python WakeupListener.py")
 
 if __name__ == '__main__':
     main()
