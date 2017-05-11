@@ -4,7 +4,7 @@ import time
 import RPi.GPIO as GPIO
 
 
-class hardwareController():
+class HardwareController():
 
     # TODO: 初始化时用列表 + 字典配置引脚输出模式
 

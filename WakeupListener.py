@@ -20,5 +20,7 @@ def recv(serial):
 while True:
     data = recv(instance)
     if('@' in data):
+        # 杀死所有 mplayer 音频播放
+        os.system("killall mplayer")
         # 唤醒软件识别流程
         os.system("python VoiceHandler.py")
