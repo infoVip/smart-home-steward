@@ -4,6 +4,7 @@ import os
 import random
 import ConfigParser
 import Adafruit_DHT
+import bluetooth
 from libs.TulingAPI import TulingAPI
 from libs.BaiduVoiceAPI import BaiduVoiceAPI
 from libs.HardwareController import HardwareController
@@ -71,26 +72,35 @@ class Interact():
 
             # 语音控制开关灯
             if ("灯" in voiceResult):
+                instance = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+                instance.connect(('20:15:01:30:04:07', 1))
+
                 if ("红" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开红色的灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_on.wav'")
-                    self.hardwareHelper.lightUp(11)
-                if ("黄" in voiceResult):
-                    voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开黄色的灯")
+                    instance.send('r')
+                if ("绿" in voiceResult):
+                    voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开绿色的灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_on.wav'")
-                    self.hardwareHelper.lightUp(13)
+                    instance.send('g')
                 if ("蓝" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开蓝色的灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_on.wav'")
-                    self.hardwareHelper.lightUp(15)
+                    instance.send('b')
                 if ("关" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您关灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_off.wav'")
-                    self.hardwareHelper.lightOff(11)
+                    instance.send('off')
+                if ("开灯" in voiceResult):
+                    voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开灯")
+                    os.system("mplayer '%s'" % voiceUrl)
+                    os.system("mplayer 'audio/device_on.wav'")
+                    instance.send('on')
+                instance.close()
                 return
 
             # 测量室内温湿度数据
@@ -116,9 +126,6 @@ class Interact():
                 # 播放指定歌曲
                 music = MusicPlayer()
                 music.play(musicName[2: ])
-
-
-
                 return
 
             # 请求图灵对话结果
