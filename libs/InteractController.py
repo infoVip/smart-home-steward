@@ -5,14 +5,13 @@ import random
 import ConfigParser
 import Adafruit_DHT
 import bluetooth
-from libs.TulingAPI import TulingAPI
-from libs.BaiduVoiceAPI import BaiduVoiceAPI
-from libs.HardwareController import HardwareController
-from libs.MusicPlayer import MusicPlayer
+
+from MusicAPI import MusicAPI
+from TulingAPI import TulingAPI
+from BaiduVoiceAPI import BaiduVoiceAPI
 
 
-class Interact():
-    hardwareHelper = ""
+class InteractController():
     baiduVoice = ""
     tuling = ""
 
@@ -21,9 +20,6 @@ class Interact():
 
     # 初始化模块
     def __init__(self):
-        # 初始化硬件控制类
-        self.hardwareHelper = HardwareController()
-
         # 初始化百度语音 API 工具类
         self.baiduVoice = BaiduVoiceAPI()
 
@@ -69,38 +65,37 @@ class Interact():
         print ">>>>> 识别结果: " + voiceResult
         print '\033[0m'
         if (voiceResult != ""):
-
             # 语音控制开关灯
             if ("灯" in voiceResult):
-                instance = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-                instance.connect(('20:15:01:30:04:07', 1))
+                btInstance = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+                btInstance.connect(('20:15:01:30:04:07', 1))
 
                 if ("红" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开红色的灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_on.wav'")
-                    instance.send('r')
+                    btInstance.send('r')
                 if ("绿" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开绿色的灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_on.wav'")
-                    instance.send('g')
+                    btInstance.send('g')
                 if ("蓝" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开蓝色的灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_on.wav'")
-                    instance.send('b')
+                    btInstance.send('b')
                 if ("关" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您关灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_off.wav'")
-                    instance.send('off')
+                    btInstance.send('off')
                 if ("开灯" in voiceResult):
                     voiceUrl = self.baiduVoice.vocieGeneration("好的，正在为您开灯")
                     os.system("mplayer '%s'" % voiceUrl)
                     os.system("mplayer 'audio/device_on.wav'")
-                    instance.send('on')
-                instance.close()
+                    btInstance.send('on')
+                btInstance.close()
                 return
 
             # 测量室内温湿度数据
@@ -110,9 +105,17 @@ class Interact():
                 os.system("mplayer 'audio/loading.wav'")
 
                 # 获取室内温湿度
-                humidity, temperature = Adafruit_DHT.read_retry(22, 4)
+                humidity, temperature = Adafruit_DHT.read_retry(22, 18)
 
-                voiceUrl = self.baiduVoice.vocieGeneration("当前室内温度为，'%.1f'度，湿度为，'%.1f'%%RH" % (temperature, humidity))
+                sentence = "当前室内温度为，'%.1f'度，湿度为，'%.1f'%%RH" % (temperature, humidity)
+                if temperature > 30:
+                    sentence += "，气温有点高，记得多喝水并在阴凉的地方休息，小心中暑哦！"
+                if temperature < 15:
+                    sentence += "，气温偏低，记得多穿衣服多喝热水，小心感冒哦！"
+                if humidity > 80:
+                    sentence += "，空气有点潮湿，是不是要下雨了呢？"
+
+                voiceUrl = self.baiduVoice.vocieGeneration(sentence)
                 os.system("mplayer '%s'" % voiceUrl)
                 return
 
@@ -124,8 +127,8 @@ class Interact():
                 os.system("mplayer '%s'" % voiceUrl)
 
                 # 播放指定歌曲
-                music = MusicPlayer()
-                music.play(musicName[2: ])
+                musicPlayer = MusicAPI()
+                musicPlayer.play(musicName[2: ])
                 return
 
             # 请求图灵对话结果
@@ -136,6 +139,3 @@ class Interact():
             # 获取语音合成 url
             voiceUrl = self.baiduVoice.vocieGeneration(dialogResult)
             os.system("mplayer '%s'" % voiceUrl)
-
-    def hardwareControl(self):
-        return

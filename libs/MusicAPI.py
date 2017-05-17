@@ -6,7 +6,7 @@ import base64
 import urllib2
 import traceback
 
-class MusicPlayer():
+class MusicAPI():
 
     # 发起请求
     def request(self, url, data):

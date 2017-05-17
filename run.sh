@@ -1,3 +1,3 @@
 # 启动语音唤醒监听
-python WakeupListener.py
-
+python listeners/WakeupListener.py
+python listeners/GasListener.py

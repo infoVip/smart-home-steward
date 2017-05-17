@@ -2,7 +2,9 @@
 
 import os
 import sys
-from libs.Interact import Interact
+
+sys.path.append('/home/pi/Documents/smart-home-steward/')
+from libs.InteractController import InteractController
 
 
 def main():
@@ -11,7 +13,7 @@ def main():
     sys.setdefaultencoding("utf-8")
 
     # 初始化用户交互工具类
-    interact = Interact()
+    interact = InteractController()
 
     # 播放欢迎词
     interact.sayHello()
